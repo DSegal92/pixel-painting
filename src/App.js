@@ -27,7 +27,13 @@ class App extends Component {
 
   handleCellClick(x,y) {
     let tmpboard = this.state.board
-    tmpboard[x][y] = this.state.color
+
+    if (this.state.color == tmpboard[x][y]) {
+      tmpboard[x][y] = ''
+    }
+    else {
+      tmpboard[x][y] = this.state.color
+    }
 
     this.setState({ board: tmpboard })
   }
