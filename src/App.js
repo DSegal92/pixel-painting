@@ -4,6 +4,7 @@ import DrawingCanvas from './DrawingCanvas';
 import './App.css';
 import SizeChooser from './SizeChooser';
 import ColorPicker from './ColorPicker';
+import { subscribeToSocket, sendPixelPlace, newPixel } from './api.js'
 
 class App extends Component {
   constructor(props) {
@@ -19,28 +20,64 @@ class App extends Component {
                    scale: 1,
                    board: board,
                    color: 'red' }
+
+    subscribeToSocket((e) => this.rehydrateBoard(e))
+    newPixel((x,y,z) => this.handleCellClick(x,y,z, true))
+  }
+
+  rehydrateBoard = (board) => {
+    let newBoard = Array(30).fill('').map(x => Array(30).fill(''))
+
+    for(let i = 0; i < 30; i++) {
+      for(let j = 0; j < 30; j++) {
+        newBoard[i][j] = this.getColor(board[(i + 30 * j)])
+      }
+    }
+
+    this.setState({ board: newBoard })
+  }
+
+  getColor = (colorIndex) => {
+    let colors = ['', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
+    return colors[colorIndex]
   }
 
   handleSizeUpdate(newScale)  {
     this.setState({ scale: newScale })
   }
 
-  handleCellClick(x,y) {
+  handleIncomingColor(x,y,color) {
+    let tmpboard = this.state.board
+    tmpboard[x][y] = color
+    this.setState({ board: tmpboard })
+
+  }
+
+  handleCellClick(x,y,specificColor, remote) {
     let tmpboard = this.state.board
 
-    if (this.state.color == tmpboard[x][y]) {
-      tmpboard[x][y] = ''
+    let color = ''
+
+    if (specificColor) {
+      console.log(specificColor)
+      color = specificColor
     }
-    else {
-      tmpboard[x][y] = this.state.color
+    else if (this.state.color != tmpboard[x][y]) {
+      color = this.state.color
     }
 
+    tmpboard[x][y] = color
+
+    if (!remote) {
+      sendPixelPlace(x,y,color)
+    }
     this.setState({ board: tmpboard })
   }
 
   handleChooseColor(color) {
     this.setState({ color: color })
   }
+
 
   render() {
     return (
