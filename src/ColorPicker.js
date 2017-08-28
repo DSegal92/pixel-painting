@@ -2,9 +2,9 @@ import React from 'react'
 import ColorChoice from './ColorChoice'
 
 const ColorPicker = (props) => (
-  <div style={{ float: 'left', marginTop: '30px' }}>
+  <div className="color-picker">
     { ['red', 'orange', 'yellow', 'green', 'blue', 'purple'].map(x =>
-      <ColorChoice color={ x } {...props} />
+      <ColorChoice key={ x }color={ x } {...props} />
     ) }
   </div>
 )

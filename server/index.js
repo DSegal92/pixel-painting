@@ -15,7 +15,7 @@ io.on('connection', (client) => {
   });
 
   client.on('pixel_placed', function(x,y,color) {
-    let offset = y * 30 + x
+    let offset = y * 20 + x
     let useColor = color
     if (useColor == '' || useColor == undefined) {
       useColor = 'none'
